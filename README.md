@@ -13,3 +13,9 @@ This is the more useful one, but requires login, then use the token on subsequen
 - Implement all (discovered) functionality
 - Document
 - Publish as npm package
+
+### Setup
+If you want, you can create a .env with your USERNAME and PASSWORD to used with login.
+
+### Data
+The data folder contains a players.json file that is created from their players endpoint. This is only called daily to limit the load on their API per Sleeper's request.
