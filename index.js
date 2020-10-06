@@ -3,6 +3,7 @@ const client = require('./client');
 
 (async function () {
   // client.getPlayers();
+
   // const players = await client.getTrendingAdds();
   // console.log(players.map(p => client.getPlayer(p.player_id)));
   // client.getTrendingDrops();
