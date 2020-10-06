@@ -43,9 +43,25 @@ const client = require('./client');
   // const messages = client.getMessages(league_id);
   // console.log(messages[0]);
 
-  const res = await client.login(process.env.USERNAME, process.env.PASSWORD);
-  const messages = await client.getMessages(league_id);
-  console.log(messages.data.latest[0]);
-  const message_id = messages.data.latest[0].message_id;
-  client.unreactToMessage(league_id, message_id, 'like');
+  let res = await client.login(process.env.USERNAME, process.env.PASSWORD);
+  // const messages = await client.getMessages(league_id);
+  // console.log(messages.data.latest[0]);
+  // const message_id = messages.data.latest[0].message_id;
+  // client.unreactToMessage(league_id, message_id, 'like');
+  // res = await client.watchPlayer(6694);
+  // res = await client.unwatchPlayer(6694);
+  // res = await client.getWatchedPlayers();
+
+  // const friends = await client.getFriends();
+  // console.log(friends);
+  // const requests = await client.getRequests();
+  // console.log(requests);
+  let mentions = await client.getMentions(true);
+  console.log(mentions.data.mentions.length);
+  console.log(mentions.data.mentions[0]);
+  res = await client.markMentionRead(mentions.data.mentions[0].message_id);
+  console.log(res);
+  mentions = await client.getMentions(true);
+  console.log(mentions.data.mentions.length);
+
 }());

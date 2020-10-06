@@ -49,6 +49,134 @@ const client = {
     return await this.fetchAndLog(endpoint, {});
   },
 
+  // Inbox
+  getMentions: async function (unread) {
+    unread = !!unread;
+
+    const query = `
+      query mentions {
+        mentions (unread: ${unread}){
+          message_id
+          metadata
+          parent_id
+          unread
+          user_id
+        }
+      }
+    `;
+    return await this.fetchGraphQL('mentions', {}, query);
+  },
+  markMentionRead: async function (message_id) {
+    const query = `
+      query mark_mention_as_read {
+        mark_mention_as_read (message_id: "${message_id}")
+      }
+    `;
+    return await this.fetchGraphQL('mark_mention_as_read', {}, query);
+  },
+  getDirectMessages: async function () {
+    const query = `
+      query my_dms {
+        my_dms(unread: false) {
+          dm_id
+          dm_type
+          hidden_at
+          last_author_avatar
+          last_author_display_name
+          last_author_real_name
+          last_author_id
+          last_message_attachment
+          last_message_id
+          last_message_text
+          last_message_text_map
+          last_message_time
+          last_pinned_message_id
+          last_read_id
+          member_can_invite
+          recent_users
+          title
+        }
+        dm_single_inbound: inbound_requests(request_type: "dm_single"){
+          created
+          request_type
+          requestee_display_name
+          requestee_id
+          requestee_avatar
+          requester_display_name
+          requester_id
+          requester_avatar
+          type_description
+          type_id
+          type_metadata
+          type_name
+        } 
+        dm_group_inbound: inbound_requests(request_type: "dm_group"){
+          created
+          request_type
+          requestee_display_name
+          requestee_id
+          requestee_avatar
+          requester_display_name
+          requester_id
+          requester_avatar
+          type_description
+          type_id
+          type_metadata
+          type_name
+        }
+      }
+    `;
+    return await this.fetchGraphQL('my_dms', {}, query);
+  },
+  getFriends: async function () {
+    const query = `
+      query my_friends {
+        my_friends {
+          friend_display_name
+          friend_id
+          friend_avatar
+          last_contacted
+        }
+      }
+    `;
+    return await this.fetchGraphQL('my_friends', {}, query);
+  },
+  getRequests: async function () {
+    const query = `
+      query requests {
+        friend_inbound: inbound_requests(request_type: "friend"){
+          created
+          request_type
+          requestee_display_name
+          requestee_avatar
+          requestee_id
+          requester_display_name
+          requester_id
+          requester_avatar
+          type_description
+          type_id
+          type_metadata
+          type_name
+        }
+        friend_outbound: outbound_requests(request_type: "friend"){
+          created
+          request_type
+          requestee_display_name
+          requestee_id
+          requestee_avatar
+          requester_display_name
+          requester_id
+          requester_avatar
+          type_description
+          type_id
+          type_metadata
+          type_name
+        }
+      }
+    `;
+    return await this.fetchGraphQL('requests', {}, query);
+  },
+
   getUser: async function (username_or_id) {
     return await this.fetchAndLog(`user/${username_or_id}`, {})
   },
@@ -116,7 +244,59 @@ const client = {
     return await this.fetchAndLog(endpoint, {})
   },
 
-  //https://api.sleeper.app/v1/user/{{ user_id }}/drafts/nfl/2020
+  updateWaiverClaim: async function (league_id, transaction_id, waiver_bid, priority) {
+    const query = `
+      mutation update_waiver_claim($k_settings: [String], $v_settings: [Int]) {
+        update_waiver_claim(league_id: \"520384989320884224\",transaction_id: \"619032963337924608\",leg: 4,k_settings: $k_settings,v_settings: $v_settings){
+          adds
+          consenter_ids
+          created
+          creator
+          drops
+          league_id
+          leg
+          metadata
+          roster_ids
+          settings
+          status
+          status_updated
+          transaction_id
+          type
+          player_map
+        }
+      }
+    `;
+    return await this.fetchGraphQL('update_waiver_claim', { "k_settings": ["waiver_bid", "priority"], "v_settings": [waiver_bid, priority] }, query);
+  },
+
+  getWatchedPlayers: async function () {
+    const query = `
+      query watched_players {
+        watched_players(sport: "nfl"){
+          player_id
+        }
+      }
+    `;
+    return await this.fetchGraphQL('watched_players', {}, query);
+  },
+  watchPlayer: async function (player_id) {
+    const query = `
+      mutation watch_player {
+        watch_player(sport: "nfl",player_id: "${player_id}"){
+          player_id
+        }
+      }
+    `;
+    return await this.fetchGraphQL('watch_player', {}, query);
+  },
+  unwatchPlayer: async function (player_id) {
+    const query = `
+      mutation unwatch_player {
+        unwatch_player(sport: "nfl",player_id: "${player_id}")
+      }
+    `;
+    return await this.fetchGraphQL('unwatch_player', {}, query);
+  },
 
   // === Helpers ===
 
